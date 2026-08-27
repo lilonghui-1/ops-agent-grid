@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops-Agent-Grid 部署手册</title>
+<style>
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #1e293b;
+  --code-text: #e2e8f0;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 48px 0;
+  text-align: center;
+  margin-bottom: 40px;
+}
+header h1 { font-size: 2.2em; margin-bottom: 8px; }
+header .subtitle { font-size: 1.1em; opacity: 0.9; }
+header .meta { margin-top: 16px; font-size: 0.85em; opacity: 0.8; }
+.toc {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow);
+}
+.toc h2 { font-size: 1.3em; margin-bottom: 16px; color: var(--primary); }
+.toc ol { padding-left: 24px; }
+.toc li { margin-bottom: 6px; }
+.toc a { color: var(--primary); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.toc .sub { padding-left: 20px; list-style-type: circle; margin-top: 4px; }
+section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+section h2 {
+  font-size: 1.5em;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+section h3 {
+  font-size: 1.2em;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+section h4 { font-size: 1.05em; margin-top: 16px; margin-bottom: 8px; color: var(--text-secondary); }
+p { margin-bottom: 12px; }
+ul, ol { padding-left: 24px; margin-bottom: 12px; }
+li { margin-bottom: 6px; }
+code {
+  background: #f1f5f9;
+  color: var(--danger);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+pre code { background: none; color: inherit; padding: 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  font-size: 0.9em;
+}
+table th, table td {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  text-align: left;
+}
+table th { background: #f1f5f9; font-weight: 600; }
+table tr:nth-child(even) { background: #f8fafc; }
+.note {
+  border-left: 4px solid var(--primary);
+  background: #eff6ff;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 16px;
+}
+.note-warning {
+  border-left-color: var(--warning);
+  background: #fffbeb;
+}
+.note-danger {
+  border-left-color: var(--danger);
+  background: #fef2f2;
+}
+.note-success {
+  border-left-color: var(--success);
+  background: #f0fdf4;
+}
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.badge-linux { background: #fbbf24; color: #78350f; }
+.badge-windows { background: #60a5fa; color: #1e3a5f; }
+.badge-optional { background: #e5e7eb; color: #4b5563; }
+.footer { text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 0.85em; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ops-Agent-Grid 部署手册</h1>
+  <p class="subtitle">新一代智能运维平台 — 融合 Ops-Agent + Ongrid 的 AIOps 系统</p>
+  <div class="meta">版本 2.0.0 | 更新日期: 2026-08-27 | 仓库: github.com/lilonghui-1/ops-agent-grid</div>
+</header>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#overview">系统概述</a>
+      <ol class="sub">
+        <li><a href="#architecture">架构总览</a></li>
+        <li><a href="#features">核心功能</a></li>
+        <li><a href="#tech-stack">技术栈</a></li>
+      </ol>
+    </li>
+    <li><a href="#prerequisites">环境准备</a>
+      <ol class="sub">
+        <li><a href="#os-requirements">操作系统要求</a></li>
+        <li><a href="#python-env">Python 环境</a></li>
+        <li><a href="#node-env">Node.js 环境</a></li>
+        <li><a href="#ssh-prepare">SSH 免密配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#install">安装部署</a>
+      <ol class="sub">
+        <li><a href="#clone">获取代码</a></li>
+        <li><a href="#python-deps">安装 Python 依赖</a></li>
+        <li><a href="#frontend-build">前端构建</a></li>
+        <li><a href="#env-config">环境变量配置</a></li>
+        <li><a href="#config-yaml">主配置文件</a></li>
+        <li><a href="#servers-config">服务器配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#loki-grafana">日志平台部署 (Loki + Grafana)</a>
+      <ol class="sub">
+        <li><a href="#loki-install">Grafana Loki 安装</a></li>
+        <li><a href="#promtail-install">Promtail 安装与配置</a></li>
+        <li><a href="#grafana-install">Grafana 安装</a></li>
+        <li><a href="#grafana-datasource">Grafana 数据源配置</a></li>
+      </ol>
+    </li>
+    <li><a href="#db-drivers">数据库驱动安装</a>
+      <ol class="sub">
+        <li><a href="#oracle-driver">Oracle (oracledb)</a></li>
+        <li><a href="#dm-driver">达梦 (dmPython)</a></li>
+        <li><a href="#kingbase-driver">人大金仓 (ksycopg2)</a></li>
+      </ol>
+    </li>
+    <li><a href="#k8s-setup">Kubernetes 集群对接（可选）</a></li>
+    <li><a href="#im-channels">IM 通道配置（可选）</a></li>
+    <li><a href="#startup">启动服务</a>
+      <ol class="sub">
+        <li><a href="#start-backend">后端启动</a></li>
+        <li><a href="#start-frontend">前端启动</a></li>
+        <li><a href="#start-systemd">Systemd 托管（生产推荐）</a></li>
+      </ol>
+    </li>
+    <li><a href="#verify">部署验证</a></li>
+    <li><a href="#troubleshoot">常见问题</a></li>
+  </ol>
+</div>
+
+<!-- 1. Overview -->
+<section id="overview">
+  <h2>1. 系统概述</h2>
+
+  <h3 id="architecture">1.1 架构总览</h3>
+  <p>Ops-Agent-Grid 采用前后端分离 + Agent 智能体架构：</p>
+  <ul>
+    <li><strong>后端 (Python/FastAPI)</strong>：提供 REST API、WebSocket 实时通信、Agent 编排引擎、定时调度</li>
+    <li><strong>前端 (Vue 3/Element Plus)</strong>：Web 管理界面，含仪表盘、服务器管理、日志检索、Web 终端、告警中心等</li>
+    <li><strong>Agent 层</strong>：Coordinator 协调器 + 4 大 Specialist 专家 (SRE/网络/数据库/计算) + 事件调查器 + 审批评审器</li>
+    <li><strong>工具层</strong>：SSH 工具、数据库工具、K8s 工具、网络工具、拓扑工具、日志工具、通知工具等 20+ 工具</li>
+    <li><strong>通道层</strong>：Slack / 钉钉 / 企业微信 / Telegram / 飞书 统一消息路由</li>
+  </ul>
+
+  <h3 id="features">1.2 核心功能</h3>
+  <table>
+    <tr><th>模块</th><th>功能</th></tr>
+    <tr><td>服务器巡检</td><td>CPU/内存/磁盘/网络指标采集，阈值告警，支持 Linux + Windows</td></tr>
+    <tr><td>故障诊断</td><td>AI 驱动的自动故障根因分析 (RCA)，事件时间线</td></tr>
+    <tr><td>日志分析</td><td>SSH 日志检索 + ELK/Loki 平台查询，关键词异常检测</td></tr>
+    <tr><td>自愈处理</td><td>规则引擎 + 审批门控，自动重启服务、清理磁盘、杀慢查询</td></tr>
+    <tr><td>Web 终端</td><td>浏览器内 SSH 终端 (xterm.js + WebSocket)</td></tr>
+    <tr><td>告警管理</td><td>阈值规则 + 日志关键词 + PromQL 规则，Alertmanager Webhook 兼容</td></tr>
+    <tr><td>审批管理</td><td>高风险操作人工审批，24h 自动过期</td></tr>
+    <tr><td>拓扑图</td><td>服务依赖可视化，爆炸半径计算</td></tr>
+    <tr><td>配置管理</td><td>服务器/数据库/LLM/应用配置分类管理与版本回滚</td></tr>
+    <tr><td>AI 对话</td><td>多模型 LLM 路由 (OpenAI/Claude/Gemini/Qwen/DeepSeek)</td></tr>
+    <tr><td>技能目录</td><td>Agent 能力自描述，动态工具发现</td></tr>
+    <tr><td>审计日志</td><td>全量 HTTP 请求记录，敏感数据脱敏</td></tr>
+  </table>
+
+  <h3 id="tech-stack">1.3 技术栈</h3>
+  <table>
+    <tr><th>层级</th><th>技术</th><th>版本要求</th></tr>
+    <tr><td>后端框架</td><td>FastAPI + Uvicorn</td><td>>=0.100 / >=0.23</td></tr>
+    <tr><td>Agent 引擎</td><td>LangChain + LangGraph</td><td>>=0.3 / >=0.2</td></tr>
+    <tr><td>ORM</td><td>SQLAlchemy</td><td>>=2.0</td></tr>
+    <tr><td>认证</td><td>JWT (python-jose) + bcrypt</td><td>>=3.3 / >=4.0</td></tr>
+    <tr><td>SSH</td><td>Paramiko</td><td>>=3.4</td></tr>
+    <tr><td>前端框架</td><td>Vue 3 + TypeScript</td><td>>=3.5</td></tr>
+    <tr><td>UI 组件</td><td>Element Plus</td><td>>=2.14</td></tr>
+    <tr><td>终端模拟</td><td>xterm.js + addon-fit</td><td>>=5.5</td></tr>
+    <tr><td>图表</td><td>ECharts</td><td>>=6.0</td></tr>
+    <tr><td>代码编辑器</td><td>CodeMirror 6</td><td>>=6.0</td></tr>
+  </table>
+</section>
+
+<!-- 2. Prerequisites -->
+<section id="prerequisites">
+  <h2>2. 环境准备</h2>
+
+  <h3 id="os-requirements">2.1 操作系统要求</h3>
+  <table>
+    <tr><th>系统</th><th>版本</th><th>备注</th></tr>
+    <tr><td>CentOS / RHEL</td><td>7+ / 8+</td><td>生产推荐</td></tr>
+    <tr><td>Ubuntu / Debian</td><td>20.04+ / 11+</td><td>开发推荐</td></tr>
+    <tr><td>Windows Server</td><td>2016+</td><td>支持作为被监控目标</td></tr>
+  </table>
+  <div class="note">部署服务器需安装 <code>gcc</code>、<code>python3-devel</code>（或 <code>python3-dev</code>）以编译部分 C 扩展包。</div>
+
+  <h3 id="python-env">2.2 Python 环境</h3>
+  <p>Ops-Agent 要求 Python 3.9+（建议 3.10/3.11）。安装步骤：</p>
+  <h4>CentOS / RHEL</h4>
+  <pre><code># 安装编译工具
+sudo yum groupinstall -y "Development Tools"
+sudo yum install -y python3 python3-devel openssl-devel
+
+# 验证
+python3 --version  # 应 >= 3.9</code></pre>
+
+  <h4>Ubuntu / Debian</h4>
+  <pre><code>sudo apt update
+sudo apt install -y build-essential python3 python3-dev python3-pip libssl-dev
+
+python3 --version</code></pre>
+
+  <h4>创建虚拟环境</h4>
+  <pre><code>python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip</code></pre>
+
+  <h3 id="node-env">2.3 Node.js 环境</h3>
+  <p>前端构建需要 Node.js 18+ 和 npm。</p>
+  <pre><code># 使用 nvm 安装
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install 20
+nvm use 20
+
+node --version  # 应 >= 18
+npm --version</code></pre>
+
+  <h3 id="ssh-prepare">2.4 SSH 免密配置</h3>
+  <p>Ops-Agent 通过 SSH 连接目标服务器，需配置密钥认证：</p>
+  <pre><code># 1. 在部署服务器上生成密钥对
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/ops_agent_key -N ""
+
+# 2. 将公钥分发到目标服务器
+ssh-copy-id -i ~/.ssh/ops_agent_key.pub ops@192.168.1.10
+ssh-copy-id -i ~/.ssh/ops_agent_key.pub ops@192.168.1.20
+
+# 3. 验证免密登录
+ssh -i ~/.ssh/ops_agent_key ops@192.168.1.10 "hostname"
+
+# 4. 设置环境变量
+export SSH_PRIVATE_KEY_PATH=~/.ssh/ops_agent_key</code></pre>
+  <div class="note note-warning">Windows 目标服务器需安装 OpenSSH Server 并配置密钥认证。参见 <a href="#windows-ssh">附录: Windows SSH 配置</a>。</div>
+</section>
+
+<!-- 3. Install -->
+<section id="install">
+  <h2>3. 安装部署</h2>
+
+  <h3 id="clone">3.1 获取代码</h3>
+  <pre><code>git clone https://github.com/lilonghui-1/ops-agent-grid.git
+cd ops-agent-grid</code></pre>
+
+  <h3 id="python-deps">3.2 安装 Python 依赖</h3>
+  <pre><code># 激活虚拟环境
+source venv/bin/activate
+
+# 安装核心依赖
+pip install -r requirements.txt
+
+# 验证关键包
+python -c "import fastapi, langchain, paramiko, sqlalchemy; print('核心依赖安装成功')"</code></pre>
+
+  <h4>可选依赖（按需安装）</h4>
+  <table>
+    <tr><th>功能</th><th>包名</th><th>安装命令</th></tr>
+    <tr><td>Kubernetes 工具</td><td>kubernetes</td><td><code>pip install kubernetes>=29.0.0</code></td></tr>
+    <tr><td>SNMP 网络工具</td><td>pysnmp</td><td><code>pip install pysnmp>=6.0.0</code></td></tr>
+    <tr><td>Slack 通道</td><td>slack-sdk</td><td><code>pip install slack-sdk>=3.27.0</code></td></tr>
+    <tr><td>Anthropic Claude</td><td>langchain-anthropic</td><td><code>pip install langchain-anthropic>=0.2.0</code></td></tr>
+    <tr><td>Google Gemini</td><td>langchain-google-genai</td><td><code>pip install langchain-google-genai>=2.0.0</code></td></tr>
+    <tr><td>知识库 RAG</td><td>chromadb</td><td><code>pip install chromadb>=0.5.0</code></td></tr>
+  </table>
+
+  <h3 id="frontend-build">3.3 前端构建</h3>
+  <pre><code>cd web
+npm install
+npm run build
+# 构建产物在 web/dist/ 目录</code></pre>
+
+  <h4>开发模式</h4>
+  <pre><code>npm run dev
+# 访问 http://localhost:5173</code></pre>
+
+  <h3 id="env-config">3.4 环境变量配置</h3>
+  <p>创建 <code>.env</code> 文件或在系统环境变量中设置：</p>
+  <pre><code># === LLM 配置 ===
+OPENAI_API_KEY=sk-your-openai-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+QWEN_API_KEY=your-qwen-key
+DEEPSEEK_API_KEY=your-deepseek-key
+
+# === SSH 配置 ===
+SSH_PRIVATE_KEY_PATH=/root/.ssh/ops_agent_key
+
+# === 数据库密码 ===
+MYSQL_PASSWORD=your-mysql-password
+PG_PASSWORD=your-pg-password
+REDIS_PASSWORD=your-redis-password
+ORACLE_PASSWORD=your-oracle-password
+DM_PASSWORD=your-dm-password
+KINGBASE_PASSWORD=your-kingbase-password
+
+# === Windows 服务器 ===
+WIN_SERVER_PASSWORD=your-windows-password
+
+# === Web 安全 ===
+OPS_AGENT_SECRET_KEY=$(python -c "import secrets; print(secrets.token_hex(32))")
+
+# === 日志平台 ===
+ES_URL=http://elasticsearch:9200
+ES_USERNAME=elastic
+ES_PASSWORD=your-es-password
+LOKI_URL=http://loki:3100
+
+# === IM 通道 ===
+WECOM_WEBHOOK=https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx
+DINGTALK_WEBHOOK=https://oapi.dingtalk.com/robot/send?access_token=xxx
+DINGTALK_SECRET=SECxxx
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx
+TELEGRAM_BOT_TOKEN=123456:ABC-xxx
+TELEGRAM_CHAT_ID=-1001234567890
+LARK_WEBHOOK_URL=https://open.larksuite.com/open-apis/bot/v2/hook/xxx
+
+# === 告警 ===
+ALERT_WEBHOOK_TOKEN=your-alert-webhook-token</code></pre>
+
+  <h3 id="config-yaml">3.5 主配置文件</h3>
+  <p>主配置文件位于 <code>config/config.yaml</code>，使用 <code>${ENV_VAR}</code> 语法引用环境变量。关键配置段说明：</p>
+  <table>
+    <tr><th>配置段</th><th>用途</th><th>关键字段</th></tr>
+    <tr><td><code>llm</code></td><td>默认 LLM 模型</td><td>provider, model, api_key, base_url</td></tr>
+    <tr><td><code>llm_models</code></td><td>Web 端可选模型列表</td><td>name, provider, model</td></tr>
+    <tr><td><code>agent_models</code></td><td>按 Agent 类型路由模型</td><td>coordinator, specialist_*</td></tr>
+    <tr><td><code>web</code></td><td>Web 平台参数</td><td>host, port, secret_key, default_admin</td></tr>
+    <tr><td><code>channels</code></td><td>IM 通道开关</td><td>slack/dingtalk/wecom/telegram/lark</td></tr>
+    <tr><td><code>thresholds</code></td><td>告警阈值</td><td>cpu, memory, disk</td></tr>
+    <tr><td><code>alerts</code></td><td>告警引擎配置</td><td>auto_investigate, webhook_token</td></tr>
+    <tr><td><code>approval</code></td><td>审批策略</td><td>auto_expire_hours, require_for_risky</td></tr>
+    <tr><td><code>kubernetes</code></td><td>K8s 连接</td><td>kubeconfig, in_cluster</td></tr>
+  </table>
+
+  <h3 id="servers-config">3.6 服务器配置</h3>
+  <p>编辑 <code>config/servers.yaml</code> 添加目标服务器：</p>
+  <pre><code>servers:
+  - name: "web-server-01"
+    host: "192.168.1.10"
+    port: 22
+    username: "ops"
+    private_key_path: "${SSH_PRIVATE_KEY_PATH}"
+    tags: ["web", "production"]
+    databases:
+      - type: "mysql"
+        host: "127.0.0.1"
+        port: 3306
+        username: "monitor"
+        password: "${MYSQL_PASSWORD}"
+        name: "app_db"
+
+  # Windows 服务器
+  - name: "win-app-server-01"
+    host: "192.168.1.30"
+    port: 22
+    username: "administrator"
+    password: "${WIN_SERVER_PASSWORD}"
+    os_type: "windows"
+    tags: ["windows", "application"]</code></pre>
+</section>
+
+<!-- 4. Loki + Grafana -->
+<section id="loki-grafana">
+  <h2>4. 日志平台部署 (Loki + Grafana)</h2>
+  <p>Ops-Agent 支持对接 Grafana Loki 进行集中日志查询。以下为完整的 Loki + Promtail + Grafana 部署步骤。</p>
+
+  <h3 id="loki-install">4.1 Grafana Loki 安装</h3>
+  <h4>方式一：二进制安装 <span class="badge badge-linux">Linux</span></h4>
+  <pre><code># 下载 Loki
+wget https://github.com/grafana/loki/releases/download/v3.0.0/loki-linux-amd64.zip
+unzip loki-linux-amd64.zip
+mv loki-linux-amd64 /usr/local/bin/loki
+chmod +x /usr/local/bin/loki
+
+# 创建配置文件
+mkdir -p /etc/loki /var/lib/loki
+
+cat > /etc/loki/loki-config.yaml &lt;&lt; 'EOF'
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+
+common:
+  path_prefix: /var/lib/loki
+  storage:
+    filesystem:
+      chunks_directory: /var/lib/loki/chunks
+      rules_directory: /var/lib/loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  retention_period: 30d
+  max_query_length: 721h
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+
+analytics:
+  reporting_enabled: false
+EOF
+
+# 启动 Loki
+/usr/local/bin/loki -config.file=/etc/loki/loki-config.yaml &</code></pre>
+
+  <h4>方式二：Docker 安装</h4>
+  <pre><code>docker run -d --name loki \
+  -p 3100:3100 \
+  -v /etc/loki/loki-config.yaml:/etc/loki/loki-config.yaml \
+  -v /var/lib/loki:/var/lib/loki \
+  grafana/loki:3.0.0 \
+  -config.file=/etc/loki/loki-config.yaml</code></pre>
+
+  <h3 id="promtail-install">4.2 Promtail 安装与配置</h3>
+  <p>Promtail 负责采集目标服务器日志并推送到 Loki。</p>
+  <h4>安装 Promtail</h4>
+  <pre><code>wget https://github.com/grafana/loki/releases/download/v3.0.0/promtail-linux-amd64.zip
+unzip promtail-linux-amd64.zip
+mv promtail-linux-amd64 /usr/local/bin/promtail
+chmod +x /usr/local/bin/promtail</code></pre>
+
+  <h4>配置 Promtail</h4>
+  <pre><code>mkdir -p /etc/promtail
+
+cat > /etc/promtail/promtail-config.yaml &lt;&lt; 'EOF'
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/lib/promtail/positions.yaml
+
+clients:
+  - url: http://localhost:3100/loki/api/v1/push
+
+scrape_configs:
+  # 系统日志
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: varlogs
+          host: localhost
+          __path__: /var/log/*log
+
+  # Nginx 日志
+  - job_name: nginx
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          host: localhost
+          __path__: /var/log/nginx/*.log
+
+  # 应用日志
+  - job_name: application
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: application
+          host: localhost
+          __path__: /opt/app/logs/*.log
+
+  # Ops-Agent 自身日志
+  - job_name: ops-agent
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: ops-agent
+          host: localhost
+          __path__: /var/log/ops-agent/*.log
+EOF
+
+# 创建数据目录
+mkdir -p /var/lib/promtail
+
+# 启动 Promtail
+/usr/local/bin/promtail -config.file=/etc/promtail/promtail-config.yaml &</code></pre>
+
+  <h4>远程服务器日志采集</h4>
+  <p>在每台目标服务器上安装 Promtail 并指向中心 Loki：</p>
+  <pre><code># 修改 clients URL 为 Loki 服务器地址
+clients:
+  - url: http://loki-server:3100/loki/api/v1/push</code></pre>
+
+  <h4>Systemd 服务（推荐）</h4>
+  <pre><code># /etc/systemd/system/promtail.service
+[Unit]
+Description=Promtail Log Agent
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/promtail -config.file=/etc/promtail/promtail-config.yaml
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+# 启动
+systemctl daemon-reload
+systemctl enable --now promtail</code></pre>
+
+  <h3 id="grafana-install">4.3 Grafana 安装</h3>
+  <h4>RPM 安装 (CentOS/RHEL)</h4>
+  <pre><code>wget https://dl.grafana.com/oss/release/grafana-11.0.0-1.x86_64.rpm
+sudo yum install -y grafana-11.0.0-1.x86_64.rpm
+sudo systemctl enable --now grafana-server
+# 访问 http://localhost:3000 (默认 admin/admin)</code></pre>
+
+  <h4>DEB 安装 (Ubuntu/Debian)</h4>
+  <pre><code>sudo apt-get install -y adduser libfontconfig1
+wget https://dl.grafana.com/oss/release/grafana_11.0.0_amd64.deb
+sudo dpkg -i grafana_11.0.0_amd64.deb
+sudo systemctl enable --now grafana-server</code></pre>
+
+  <h3 id="grafana-datasource">4.4 Grafana 数据源配置</h3>
+  <ol>
+    <li>登录 Grafana → <strong>Configuration</strong> → <strong>Data Sources</strong></li>
+    <li>点击 <strong>Add data source</strong> → 选择 <strong>Loki</strong></li>
+    <li>设置 URL: <code>http://localhost:3100</code></li>
+    <li>点击 <strong>Save & Test</strong>，看到 "Data source connected and labels found." 即成功</li>
+  </ol>
+
+  <h4>常用 LogQL 查询示例</h4>
+  <pre><code># 查询所有 Nginx 日志
+{job="nginx"}
+
+# 查询特定主机
+{host="192.168.1.10"}
+
+# 查询包含 error 的日志
+{job="application"} |= "error"
+
+# 统计错误日志速率
+sum(rate({job="application"} |= "error" [5m])) by (host)
+
+# 查询 Ops-Agent 日志
+{job="ops-agent"}</code></pre>
+</section>
+
+<!-- 5. DB Drivers -->
+<section id="db-drivers">
+  <h2>5. 数据库驱动安装</h2>
+  <p>Ops-Agent 支持 MySQL / PostgreSQL / Redis / Oracle / 达梦 / 人大金仓 数据库。除 MySQL/PG/Redis 为核心依赖外，国产数据库驱动按需安装。</p>
+
+  <h3 id="oracle-driver">5.1 Oracle (oracledb)</h3>
+  <div class="note note-success">oracledb 是纯 Python 驱动，Thin 模式无需安装 Oracle Instant Client。</div>
+  <pre><code>pip install oracledb>=2.0.0
+
+# 验证
+python -c "import oracledb; print(oracledb.__version__)"</code></pre>
+  <p>配置示例（<code>servers.yaml</code>）：</p>
+  <pre><code>- type: "oracle"
+  host: "192.168.1.21"
+  port: 1521
+  username: "system"
+  password: "${ORACLE_PASSWORD}"
+  name: "ORCL"
+  service_name: "ORCL"  # 优先使用 Service Name</code></pre>
+
+  <h3 id="dm-driver">5.2 达梦数据库 (dmPython)</h3>
+  <div class="note note-warning">达梦驱动需从达梦官网下载 whl 包，且需安装达梦客户端并设置 <code>DM_HOME</code> 环境变量。</div>
+  <pre><code># 1. 安装达梦客户端
+#    从达梦官网下载并安装 DM8 客户端
+#    假设安装路径: /opt/dmdbms
+
+# 2. 设置环境变量
+export DM_HOME=/opt/dmdbms
+export LD_LIBRARY_PATH=$DM_HOME/bin:$LD_LIBRARY_PATH
+
+# 3. 安装 Python 驱动
+pip install dmPython>=2.4.0
+
+# 验证
+python -c "import dmPython; print('达梦驱动安装成功')"</code></pre>
+
+  <h3 id="kingbase-driver">5.3 人大金仓 (ksycopg2)</h3>
+  <div class="note note-success">ksycopg2 是纯 Python 驱动，无需额外客户端。</div>
+  <pre><code>pip install ksycopg2>=2.8.0
+
+# 验证
+python -c "import ksycopg2; print('人大金仓驱动安装成功')"</code></pre>
+</section>
+
+<!-- 6. K8s -->
+<section id="k8s-setup">
+  <h2>6. Kubernetes 集群对接（可选） <span class="badge badge-optional">可选</span></h2>
+  <p>如需使用 K8s 工具（Pod 状态查询、事件查询、日志获取等），需配置 kubeconfig。</p>
+  <pre><code># 1. 安装依赖
+pip install kubernetes>=29.0.0
+
+# 2. 配置 config.yaml
+# kubernetes:
+#   kubeconfig: "${KUBECONFIG}"
+#   in_cluster: false
+
+# 3. 设置环境变量
+export KUBECONFIG=/root/.kube/config
+
+# 4. 验证连接
+python -c "
+from kubernetes import client, config
+config.load_kube_config()
+v1 = client.CoreV1Api()
+pods = v1.list_namespaced_pod('default')
+print(f'连接成功，default 命名空间有 {len(pods.items)} 个 Pod')
+"</code></pre>
+  <p>若 Ops-Agent 部署在 K8s 集群内部（Pod 中运行），设置 <code>in_cluster: true</code>，系统自动使用 ServiceAccount 认证。</p>
+</section>
+
+<!-- 7. IM Channels -->
+<section id="im-channels">
+  <h2>7. IM 通道配置（可选） <span class="badge badge-optional">可选</span></h2>
+  <p>支持 5 种 IM 通道，在 <code>config.yaml</code> 的 <code>channels</code> 段配置。</p>
+  <table>
+    <tr><th>通道</th><th>必需环境变量</th><th>备注</th></tr>
+    <tr><td>Slack</td><td><code>SLACK_WEBHOOK_URL</code></td><td>需要安装 slack-sdk</td></tr>
+    <tr><td>钉钉</td><td><code>DINGTALK_WEBHOOK</code>, <code>DINGTALK_SECRET</code></td><td>SECRET 用于加签认证</td></tr>
+    <tr><td>企业微信</td><td><code>WECOM_WEBHOOK</code></td><td>群机器人 Webhook</td></tr>
+    <tr><td>Telegram</td><td><code>TELEGRAM_BOT_TOKEN</code>, <code>TELEGRAM_CHAT_ID</code></td><td>支持双向通信</td></tr>
+    <tr><td>飞书</td><td><code>LARK_WEBHOOK_URL</code></td><td>自定义机器人</td></tr>
+  </table>
+  <p>将 <code>enabled</code> 设为 <code>true</code> 即可启用对应通道。</p>
+</section>
+
+<!-- 8. Startup -->
+<section id="startup">
+  <h2>8. 启动服务</h2>
+
+  <h3 id="start-backend">8.1 后端启动</h3>
+  <pre><code>cd /path/to/ops-agent-grid
+source venv/bin/activate
+
+# 加载环境变量（如有 .env 文件）
+export $(grep -v '^#' .env | xargs)
+
+# Web 管理平台模式（推荐）
+python -m src.main --mode web
+
+# CLI 交互模式
+python -m src.main --mode cli
+
+# 守护进程模式（定时巡检）
+python -m src.main --mode daemon
+
+# 单次执行任务
+python -m src.main --task "巡检所有服务器"</code></pre>
+  <p>Web 模式启动后，后端监听 <code>0.0.0.0:8000</code>，默认管理员账号 <code>admin</code> / <code>admin123</code>。</p>
+  <div class="note note-danger">生产环境请务必修改 <code>config.yaml</code> 中的 <code>default_password</code> 和 <code>secret_key</code>！</div>
+
+  <h3 id="start-frontend">8.2 前端启动</h3>
+  <h4>开发模式</h4>
+  <pre><code>cd web
+npm run dev
+# 访问 http://localhost:5173</code></pre>
+
+  <h4>生产模式（Nginx 托管）</h4>
+  <pre><code># 构建前端
+cd web
+npm run build
+
+# 配置 Nginx
+cat > /etc/nginx/conf.d/ops-agent.conf &lt;&lt; 'EOF'
+server {
+    listen 80;
+    server_name ops-agent.your-domain.com;
+
+    # 前端静态资源
+    root /path/to/ops-agent-grid/web/dist;
+    index index.html;
+
+    # SPA 路由
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # API 代理
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # WebSocket 代理
+    location /ws/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 86400;
+    }
+}
+EOF
+
+nginx -t && systemctl reload nginx</code></pre>
+
+  <h3 id="start-systemd">8.3 Systemd 托管（生产推荐）</h3>
+  <pre><code># /etc/systemd/system/ops-agent.service
+[Unit]
+Description=Ops-Agent-Grid AIOps Platform
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/ops-agent-grid
+EnvironmentFile=/path/to/ops-agent-grid/.env
+ExecStart=/path/to/ops-agent-grid/venv/bin/python -m src.main --mode web
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+# 启动
+systemctl daemon-reload
+systemctl enable --now ops-agent
+systemctl status ops-agent
+
+# 查看日志
+journalctl -u ops-agent -f</code></pre>
+</section>
+
+<!-- 9. Verify -->
+<section id="verify">
+  <h2>9. 部署验证</h2>
+  <ol>
+    <li><strong>后端健康检查</strong>：<code>curl http://localhost:8000/api/health</code> → 返回 <code>{"status":"ok"}</code></li>
+    <li><strong>前端访问</strong>：浏览器打开 <code>http://localhost:5173</code>（开发）或 <code>http://your-server</code>（生产）</li>
+    <li><strong>登录验证</strong>：使用 <code>admin</code> / <code>admin123</code> 登录，应跳转到仪表盘</li>
+    <li><strong>服务器连接</strong>：在「服务器管理」页面查看服务器是否在线</li>
+    <li><strong>日志检索</strong>：在「日志查询」页面输入查询条件，验证 Loki 连接</li>
+    <li><strong>Web 终端</strong>：在「Web 终端」页面选择服务器并连接，验证 SSH</li>
+    <li><strong>告警 Webhook</strong>：<code>curl -X POST http://localhost:8000/api/alerts/webhook -H "Authorization: Bearer &lt;token&gt;" -d '{"alerts":[]}'</code></li>
+  </ol>
+</section>
+
+<!-- 10. Troubleshoot -->
+<section id="troubleshoot">
+  <h2>10. 常见问题</h2>
+
+  <h3>Q: Python 2.7 环境下无法运行？</h3>
+  <p>Ops-Agent 要求 Python 3.9+。请使用 <code>python3</code> 命令或在虚拟环境中运行。</p>
+
+  <h3>Q: 前端页面显示 Network Error？</h3>
+  <p>检查后端是否已启动，以及 Nginx 反向代理配置中 <code>/api/</code> 路径是否正确代理到后端 8000 端口。</p>
+
+  <h3>Q: SSH 连接超时？</h3>
+  <ol>
+    <li>确认目标服务器 SSH 端口 22（或自定义端口）可达</li>
+    <li>确认密钥文件路径正确：<code>echo $SSH_PRIVATE_KEY_PATH</code></li>
+    <li>手动验证：<code>ssh -i ~/.ssh/ops_agent_key ops@target-ip</code></li>
+    <li>Windows 目标服务器需安装 OpenSSH Server</li>
+  </ol>
+
+  <h3>Q: Loki 查询无数据？</h3>
+  <ol>
+    <li>检查 Promtail 是否在运行：<code>systemctl status promtail</code></li>
+    <li>检查 Promtail 配置中的 <code>__path__</code> 是否匹配日志文件路径</li>
+    <li>在 Grafana Explore 中执行 <code>{job=""}</code> 查看所有标签</li>
+    <li>检查 Loki <code>clients</code> URL 是否正确</li>
+  </ol>
+
+  <h3>Q: 数据库连接失败？</h3>
+  <ol>
+    <li>确认数据库服务正常运行</li>
+    <li>确认对应驱动已安装：<code>pip list | grep oracledb</code></li>
+    <li>Oracle 需检查 Service Name 或 SID 是否正确</li>
+    <li>达梦需确认 <code>DM_HOME</code> 和 <code>LD_LIBRARY_PATH</code> 已设置</li>
+  </ol>
+
+  <h3>Q: AI 对话无响应？</h3>
+  <ol>
+    <li>检查 <code>OPENAI_API_KEY</code> 等环境变量是否设置</li>
+    <li>检查 <code>config.yaml</code> 中 <code>llm_models</code> 配置</li>
+    <li>查看后端日志：<code>journalctl -u ops-agent -f</code></li>
+  </ol>
+</section>
+
+<div class="footer">
+  <p>Ops-Agent-Grid 部署手册 v2.0.0 | 仓库: <a href="https://github.com/lilonghui-1/ops-agent-grid">github.com/lilonghui-1/ops-agent-grid</a></p>
+</div>
+
+</div>
+</body>
+</html>

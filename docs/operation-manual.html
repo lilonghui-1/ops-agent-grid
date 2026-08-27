@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ops-Agent-Grid 操作手册</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --primary-dark: #5b21b6;
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --code-bg: #1e293b;
+  --code-text: #e2e8f0;
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #0891b2;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 48px 0;
+  text-align: center;
+  margin-bottom: 40px;
+}
+header h1 { font-size: 2.2em; margin-bottom: 8px; }
+header .subtitle { font-size: 1.1em; opacity: 0.9; }
+header .meta { margin-top: 16px; font-size: 0.85em; opacity: 0.8; }
+.toc {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin-bottom: 40px;
+  box-shadow: var(--shadow);
+}
+.toc h2 { font-size: 1.3em; margin-bottom: 16px; color: var(--primary); }
+.toc ol { padding-left: 24px; }
+.toc li { margin-bottom: 6px; }
+.toc a { color: var(--primary); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.toc .sub { padding-left: 20px; list-style-type: circle; margin-top: 4px; }
+section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+section h2 {
+  font-size: 1.5em;
+  color: var(--primary-dark);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+section h3 { font-size: 1.2em; margin-top: 24px; margin-bottom: 12px; color: var(--text); }
+section h4 { font-size: 1.05em; margin-top: 16px; margin-bottom: 8px; color: var(--text-secondary); }
+p { margin-bottom: 12px; }
+ul, ol { padding-left: 24px; margin-bottom: 12px; }
+li { margin-bottom: 6px; }
+code {
+  background: #f1f5f9;
+  color: var(--danger);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+pre code { background: none; color: inherit; padding: 0; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.9em; }
+table th, table td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; }
+table th { background: #f1f5f9; font-weight: 600; }
+table tr:nth-child(even) { background: #f8fafc; }
+.note { border-left: 4px solid var(--info); background: #ecfeff; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px; }
+.note-warning { border-left-color: var(--warning); background: #fffbeb; }
+.note-danger { border-left-color: var(--danger); background: #fef2f2; }
+.note-success { border-left-color: var(--success); background: #f0fdf4; }
+.step { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+.step-num {
+  flex-shrink: 0;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.9em;
+}
+.step-body { flex: 1; }
+.step-body p { margin-bottom: 6px; }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.feature-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.feature-card .icon { font-size: 2em; margin-bottom: 8px; }
+.feature-card .title { font-weight: 600; margin-bottom: 4px; }
+.feature-card .desc { font-size: 0.85em; color: var(--text-secondary); }
+.footer { text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 0.85em; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ops-Agent-Grid 操作手册</h1>
+  <p class="subtitle">新一代智能运维平台 — 用户操作指南</p>
+  <div class="meta">版本 2.0.0 | 更新日期: 2026-08-27</div>
+</header>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#login">登录与认证</a></li>
+    <li><a href="#dashboard">仪表盘</a></li>
+    <li><a href="#servers">服务器管理</a>
+      <ol class="sub">
+        <li><a href="#server-list">服务器列表</a></li>
+        <li><a href="#server-detail">服务器详情</a></li>
+        <li><a href="#web-terminal">Web 终端</a></li>
+      </ol>
+    </li>
+    <li><a href="#logs">日志查询</a></li>
+    <li><a href="#services">应用服务管理</a></li>
+    <li><a href="#configs">配置管理</a></li>
+    <li><a href="#chat">AI 对话</a></li>
+    <li><a href="#alerts">告警管理</a>
+      <ol class="sub">
+        <li><a href="#alert-rules">告警规则</a></li>
+        <li><a href="#incidents">事件中心</a></li>
+      </ol>
+    </li>
+    <li><a href="#approvals">审批管理</a></li>
+    <li><a href="#topology">拓扑图</a></li>
+    <li><a href="#skills">技能目录</a></li>
+    <li><a href="#audit">审计日志</a></li>
+    <li><a href="#cli">CLI 命令行操作</a></li>
+    <li><a href="#heal-rules">自愈规则配置</a></li>
+  </ol>
+</div>
+
+<!-- 1. Login -->
+<section id="login">
+  <h2>1. 登录与认证</h2>
+  <p>打开浏览器访问 Ops-Agent-Grid Web 管理平台。</p>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <p><strong>访问平台</strong>：浏览器输入 <code>http://&lt;服务器IP&gt;:5173</code>（开发）或 <code>http://&lt;域名&gt;</code>（生产）。</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <p><strong>输入账号密码</strong>：默认管理员 <code>admin</code> / <code>admin123</code>。</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <p><strong>登录成功</strong>：跳转到仪表盘页面，JWT Token 保存在 localStorage，30 分钟内免重新登录。</p>
+    </div>
+  </div>
+  <div class="note note-danger">首次登录后请立即修改默认密码！在系统设置中可修改。</div>
+</section>
+
+<!-- 2. Dashboard -->
+<section id="dashboard">
+  <h2>2. 仪表盘</h2>
+  <p>仪表盘是平台的核心概览页面，集中展示运维关键指标。</p>
+
+  <h3>2.1 页面布局</h3>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="icon">📊</div>
+      <div class="title">服务器状态</div>
+      <div class="desc">在线/离线/告警数量</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">⚡</div>
+      <div class="title">实时指标</div>
+      <div class="desc">CPU/内存/磁盘趋势图</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🚨</div>
+      <div class="title">活跃告警</div>
+      <div class="desc">当前未恢复告警</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📝</div>
+      <div class="title">待审批</div>
+      <div class="desc">等待人工审批的操作</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔧</div>
+      <div class="title">工具数量</div>
+      <div class="desc">已注册工具总数</div>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📈</div>
+      <div class="title">任务统计</div>
+      <div class="desc">今日执行任务数</div>
+    </div>
+  </div>
+
+  <h3>2.2 操作说明</h3>
+  <ul>
+    <li><strong>服务器概览</strong>：点击服务器卡片可快速跳转到对应服务器详情</li>
+    <li><strong>指标图表</strong>：ECharts 趋势图支持时间范围切换（1h / 6h / 24h）</li>
+    <li><strong>告警列表</strong>：点击告警条目可查看事件详情</li>
+    <li><strong>快捷操作</strong>：右侧快捷面板支持「立即巡检」「发起对话」等操作</li>
+  </ul>
+</section>
+
+<!-- 3. Servers -->
+<section id="servers">
+  <h2>3. 服务器管理</h2>
+
+  <h3 id="server-list">3.1 服务器列表</h3>
+  <p>展示所有已配置的服务器，支持搜索、筛选和批量操作。</p>
+  <table>
+    <tr><th>列名</th><th>说明</th></tr>
+    <tr><td>名称</td><td>服务器别名</td></tr>
+    <tr><td>IP 地址</td><td>SSH 连接地址</td></tr>
+    <tr><td>系统类型</td><td>Linux / Windows</td></tr>
+    <tr><td>标签</td><td>用于分组和筛选</td></tr>
+    <tr><td>状态</td><td>在线（绿色）/ 离线（灰色）/ 告警（红色）</td></tr>
+    <tr><td>CPU/内存/磁盘</td><td>实时使用率（进度条）</td></tr>
+    <tr><td>操作</td><td>详情 / 终端 / 巡检</td></tr>
+  </table>
+  <h4>操作说明</h4>
+  <ul>
+    <li><strong>搜索</strong>：按名称、IP 或标签搜索</li>
+    <li><strong>标签筛选</strong>：点击标签可快速筛选同组服务器</li>
+    <li><strong>批量巡检</strong>：选中多台服务器后点击「批量巡检」按钮</li>
+    <li><strong>导出报告</strong>：点击「导出」生成 CSV 巡检报告</li>
+  </ul>
+
+  <h3 id="server-detail">3.2 服务器详情</h3>
+  <p>点击服务器行的「详情」按钮进入服务器详情页，包含以下 Tab 页签：</p>
+  <table>
+    <tr><th>页签</th><th>内容</th></tr>
+    <tr><td>概览</td><td>CPU/内存/磁盘/网络实时指标 + 历史趋势图</td></tr>
+    <tr><td>进程</td><td>Top 20 进程（按 CPU/内存排序）</td></tr>
+    <tr><td>网络连接</td><td>当前活跃 TCP 连接列表</td></tr>
+    <tr><td>服务</td><td>运行中的 systemd/Windows 服务</td></tr>
+    <tr><td>数据库</td><td>该服务器上的数据库连接状态与指标</td></tr>
+    <tr><td>历史告警</td><td>该服务器的历史告警记录</td></tr>
+  </table>
+  <div class="note">实时指标通过 WebSocket 推送，页面保持打开即可持续刷新。</div>
+
+  <h3 id="web-terminal">3.3 Web 终端</h3>
+  <p>在浏览器内直接操作目标服务器的 SSH 终端，无需安装本地 SSH 客户端。</p>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body"><p><strong>进入终端页面</strong>：左侧导航点击「Web 终端」</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body"><p><strong>选择服务器</strong>：从下拉列表中选择目标服务器</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body"><p><strong>点击连接</strong>：xterm.js 终端打开，显示连接信息</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body"><p><strong>执行命令</strong>：直接在终端中输入命令，支持所有交互式操作</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body"><p><strong>断开连接</strong>：点击「断开」按钮，或关闭浏览器页面</p></div>
+  </div>
+  <div class="note note-warning">Web 终端的操作会被审计日志记录，请谨慎执行高风险命令。</div>
+</section>
+
+<!-- 4. Logs -->
+<section id="logs">
+  <h2>4. 日志查询</h2>
+  <p>支持两种日志查询方式：SSH 直连检索 和 Loki 日志平台查询。</p>
+
+  <h3>4.1 SSH 日志检索</h3>
+  <p>通过 SSH 直接在目标服务器上执行日志查询命令，适合快速排查。</p>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body"><p>选择目标服务器</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body"><p>输入日志文件路径，如 <code>/var/log/nginx/error.log</code></p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body"><p>设置过滤条件：关键词、时间范围、行数</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body"><p>点击「查询」按钮，日志结果实时展示在页面中</p></div>
+  </div>
+
+  <h3>4.2 Loki 日志查询</h3>
+  <p>对接 Grafana Loki 日志平台，支持 LogQL 查询语法。</p>
+  <table>
+    <tr><th>参数</th><th>说明</th><th>示例</th></tr>
+    <tr><td>LogQL</td><td>Loki 查询语句</td><td><code>{job="nginx"} |= "error"</code></td></tr>
+    <tr><td>时间范围</td><td>查询的时间窗口</td><td>最近 1 小时</td></tr>
+    <tr><td>结果限制</td><td>最大返回行数</td><td>1000</td></tr>
+  </table>
+  <h4>常用 LogQL 示例</h4>
+  <pre><code># 查询所有 Nginx 错误日志
+{job="nginx"} |= "error"
+
+# 按主机筛选
+{host="192.168.1.10", job="application"}
+
+# 多关键词组合（AND/OR）
+{job="application"} |= "timeout" or "connection refused"
+
+# 正则匹配
+{job="nginx"} |~ "\\d{3} Error"
+
+# 统计错误速率
+sum(rate({job="application"} |= "error" [5m])) by (host)
+
+# 格式化提取字段
+{job="nginx"} | json | line_format "{{.status}} {{.request}}"</code></pre>
+
+  <h3>4.3 实时日志流</h3>
+  <p>点击「实时跟踪」按钮，通过 WebSocket 实时推送新日志，类似于 <code>tail -f</code> 效果。点击「停止」可结束跟踪。</p>
+</section>
+
+<!-- 5. Services -->
+<section id="services">
+  <h2>5. 应用服务管理</h2>
+  <p>管理目标服务器上的应用服务（systemd 服务 / Windows 服务）。</p>
+
+  <h3>5.1 服务列表</h3>
+  <table>
+    <tr><th>列名</th><th>说明</th></tr>
+    <tr><td>服务名称</td><td>systemd / Windows 服务名</td></tr>
+    <tr><td>显示名称</td><td>服务描述</td></tr>
+    <tr><td>状态</td><td>running / stopped / failed</td></tr>
+    <tr><td>启动类型</td><td>auto / manual / disabled</td></tr>
+    <tr><td>操作</td><td>启动 / 停止 / 重启</td></tr>
+  </table>
+
+  <h3>5.2 服务操作</h3>
+  <ul>
+    <li><strong>启动</strong>：执行 <code>systemctl start &lt;service&gt;</code> 或 <code>Start-Service</code></li>
+    <li><strong>停止</strong>：执行 <code>systemctl stop &lt;service&gt;</code> 或 <code>Stop-Service</code></li>
+    <li><strong>重启</strong>：执行 <code>systemctl restart &lt;service&gt;</code> 或 <code>Restart-Service</code></li>
+  </ul>
+  <div class="note note-danger">服务重启属于高风险操作。若 <code>config.yaml</code> 中 <code>approval.require_for_risky</code> 为 <code>true</code>，重启操作需要审批通过后才能执行。</div>
+</section>
+
+<!-- 6. Configs -->
+<section id="configs">
+  <h2>6. 配置管理</h2>
+  <p>支持对服务器上的配置文件进行在线编辑、分类管理和版本回滚。</p>
+
+  <h3>6.1 配置分类</h3>
+  <table>
+    <tr><th>分类</th><th>说明</th><th>示例</th></tr>
+    <tr><td>服务器配置</td><td>系统级配置文件</td><td>sshd_config, sysctl.conf, nginx.conf</td></tr>
+    <tr><td>数据库配置</td><td>数据库参数文件</td><td>my.cnf, postgresql.conf, redis.conf</td></tr>
+    <tr><td>LLM 配置</td><td>AI 模型相关配置</td><td>config.yaml 中的 llm 段</td></tr>
+    <tr><td>应用配置</td><td>应用程序配置文件</td><td>app.yml, docker-compose.yml</td></tr>
+  </table>
+
+  <h3>6.2 编辑配置文件</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body"><p>在配置管理页面点击「新增配置」</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body"><p>填写配置文件路径、分类、目标服务器</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body"><p>在 CodeMirror 编辑器中修改配置内容（支持 YAML/JSON/SQL 语法高亮）</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body"><p>点击「保存」按钮，系统自动创建备份版本并推送到目标服务器</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body"><p>如需回滚，在历史版本列表中选择目标版本点击「回滚」</p></div>
+  </div>
+
+  <h3>6.3 版本管理</h3>
+  <p>每次保存配置时自动创建备份版本，支持查看差异对比和一键回滚。版本记录保留最近 50 个。</p>
+</section>
+
+<!-- 7. Chat -->
+<section id="chat">
+  <h2>7. AI 对话</h2>
+  <p>通过自然语言与运维 Agent 交互，自动调度工具完成运维任务。</p>
+
+  <h3>7.1 对话界面</h3>
+  <ul>
+    <li><strong>模型选择</strong>：可在 GPT-4 / Qwen-Plus / DeepSeek-Chat 等模型间切换</li>
+    <li><strong>消息历史</strong>：支持上下文连续对话</li>
+    <li><strong>Markdown 渲染</strong>：Agent 回复支持 Markdown 格式（表格、代码块、列表等）</li>
+    <li><strong>工具调用可视化</strong>：展示 Agent 调用的工具及返回结果</li>
+  </ul>
+
+  <h3>7.2 常用对话示例</h3>
+  <pre><code># 巡检类
+"巡检服务器 192.168.1.10"
+"对所有生产环境服务器进行巡检"
+"检查 192.168.1.20 的磁盘使用情况"
+
+# 诊断类
+"诊断 192.168.1.10 的 nginx 服务异常"
+"数据库连接超时，帮我排查原因"
+"192.168.1.30 上 CPU 使用率过高，帮我找出原因"
+
+# 日志类
+"查看 192.168.1.10 的 nginx 错误日志"
+"分析 192.168.1.20 的系统日志，查找 OOM 记录"
+"搜索所有服务器的 SSH 登录失败记录"
+
+# 自愈类
+"重启 192.168.1.10 的 nginx 服务"
+"清理 192.168.1.20 的磁盘空间"
+"终止 MySQL 上的慢查询"
+
+# K8s 类
+"查看 default 命名空间的 Pod 状态"
+"获取 kube-system 的 Pod 事件"
+"查看 nginx-deployment 的 Pod 日志"</code></pre>
+
+  <h3>7.3 Agent 工作流</h3>
+  <p>AI 对话后台由 Coordinator 协调器处理，工作流程：</p>
+  <ol>
+    <li><strong>意图理解</strong>：LLM 解析用户输入，识别任务类型</li>
+    <li><strong>任务分解</strong>：将复杂任务拆解为子任务</li>
+    <li><strong>专家路由</strong>：将子任务分发给对应 Specialist（SRE/网络/数据库/计算）</li>
+    <li><strong>工具调用</strong>：Specialist 选择并调用合适工具执行</li>
+    <li><strong>审批门控</strong>：高风险操作暂停，等待人工审批</li>
+    <li><strong>结果汇总</strong>：Coordinator 收集各专家结果，生成最终报告</li>
+  </ol>
+</section>
+
+<!-- 8. Alerts -->
+<section id="alerts">
+  <h2>8. 告警管理</h2>
+
+  <h3 id="alert-rules">8.1 告警规则</h3>
+  <p>支持三种告警规则类型：</p>
+  <table>
+    <tr><th>类型</th><th>触发条件</th><th>示例</th></tr>
+    <tr><td>阈值规则</td><td>指标超过设定阈值</td><td>CPU > 80% 持续 5 分钟</td></tr>
+    <tr><td>日志关键词</td><td>日志中出现指定关键词</td><td>nginx 日志出现 "500 Internal Server Error"</td></tr>
+    <tr><td>PromQL 规则</td><td>PromQL 查询结果满足条件</td><td>rate(http_requests_total{status="500"}[5m]) > 10</td></tr>
+  </table>
+
+  <h4>创建告警规则</h4>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body"><p>在「告警管理」页面点击「新建规则」</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body"><p>选择规则类型，填写规则名称和触发条件</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body"><p>设置告警级别：Info / Warning / Critical / Fatal</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body"><p>选择通知通道（钉钉/企微/Slack 等）</p></div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body"><p>保存规则，系统按 <code>evaluation_interval</code> 定期评估</p></div>
+  </div>
+
+  <h4>告警 Webhook</h4>
+  <p>支持接收 Alertmanager 发送的告警通知。配置 URL：</p>
+  <pre><code>POST http://&lt;server&gt;:8000/api/alerts/webhook
+Authorization: Bearer &lt;ALERT_WEBHOOK_TOKEN&gt;
+Content-Type: application/json
+
+{
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "HighCPU",
+        "severity": "warning",
+        "instance": "192.168.1.10"
+      },
+      "annotations": {
+        "summary": "CPU usage above 80%",
+        "description": "192.168.1.10 CPU at 92.3%"
+      }
+    }
+  ]
+}</code></pre>
+  <p>收到告警后，系统自动创建事件并触发 <code>IncidentInvestigator</code> 进行根因分析。</p>
+
+  <h3 id="incidents">8.2 事件中心</h3>
+  <p>事件中心展示所有告警触发的事件，包含完整生命周期管理。</p>
+  <table>
+    <tr><th>字段</th><th>说明</th></tr>
+    <tr><td>事件 ID</td><td>唯一标识</td></tr>
+    <tr><td>标题</td><td>告警名称</td></tr>
+    <tr><td>级别</td><td>Info / Warning / Critical / Fatal</td></tr>
+    <tr><td>状态</td><td>Open → Investigating → Resolved / Closed</td></tr>
+    <tr><td>触发时间</td><td>告警首次触发时间</td></tr>
+    <tr><td>影响范围</td><td>受影响的服务器/服务</td></tr>
+    <tr><td>RCA 报告</td><td>AI 自动生成的根因分析报告</td></tr>
+    <tr><td>时间线</td><td>事件调查过程的时间轴</td></tr>
+  </table>
+
+  <h4>事件操作</h4>
+  <ul>
+    <li><strong>查看详情</strong>：点击事件进入详情页，查看 RCA 报告和时间线</li>
+    <li><strong>确认</strong>：运维人员确认收到告警</li>
+    <li><strong>关闭</strong>：问题已解决，关闭事件</li>
+    <li><strong>转工单</strong>：将事件转为运维工单，指派给责任人</li>
+  </ul>
+</section>
+
+<!-- 9. Approvals -->
+<section id="approvals">
+  <h2>9. 审批管理</h2>
+  <p>高风险操作（如服务重启、配置变更）需经过人工审批后方可执行。</p>
+
+  <h3>9.1 审批流程</h3>
+  <ol>
+    <li>Agent 执行高风险操作时，自动创建审批请求</li>
+    <li>审批请求发送到 IM 通道通知审批人</li>
+    <li>审批人在 Web 界面或 IM 消息中审批</li>
+    <li>审批通过 → 继续执行；审批拒绝 → 中止操作</li>
+    <li>超时（默认 24h）自动过期，操作中止</li>
+  </ol>
+
+  <h3>9.2 审批列表</h3>
+  <table>
+    <tr><th>列名</th><th>说明</th></tr>
+    <tr><td>请求 ID</td><td>审批请求唯一标识</td></tr>
+    <tr><td>操作描述</td><td>待执行的操作详情</td></tr>
+    <tr><td>风险等级</td><td>Low / Medium / High</td></tr>
+    <tr><td>发起人</td><td>触发操作的 Agent</td></tr>
+    <tr><td>目标服务器</td><td>操作影响的服务器</td></tr>
+    <tr><td>状态</td><td>Pending / Approved / Rejected / Expired</td></tr>
+    <tr><td>创建时间</td><td>审批请求创建时间</td></tr>
+    <tr><td>过期时间</td><td>自动过期时间（创建时间 + 24h）</td></tr>
+  </table>
+
+  <h3>9.3 审批操作</h3>
+  <ul>
+    <li><strong>批准</strong>：点击「批准」按钮，Agent 自动继续执行操作</li>
+    <li><strong>拒绝</strong>：点击「拒绝」按钮并填写理由，Agent 中止操作</li>
+    <li><strong>批量审批</strong>：选中多个请求，一键批量批准或拒绝</li>
+  </ul>
+</section>
+
+<!-- 10. Topology -->
+<section id="topology">
+  <h2>10. 拓扑图</h2>
+  <p>可视化展示服务之间的依赖关系和调用链路。</p>
+
+  <h3>10.1 拓扑视图</h3>
+  <ul>
+    <li><strong>节点</strong>：代表服务器/服务/数据库，颜色表示健康状态（绿=正常/黄=告警/红=故障）</li>
+    <li><strong>连线</strong>：表示服务间调用依赖，箭头表示调用方向</li>
+    <li><strong>交互</strong>：点击节点查看详情，拖拽调整布局，滚轮缩放</li>
+    <li><strong>爆炸半径</strong>：选中故障节点时，高亮显示受影响的所有下游服务</li>
+  </ul>
+
+  <h3>10.2 拓扑构建</h3>
+  <p>系统通过以下方式自动构建拓扑：</p>
+  <ul>
+    <li>SSH 采集服务器上的进程和网络连接信息</li>
+    <li>K8s Service / Endpoint 关系（如配置了 K8s）</li>
+    <li>手工标注的服务依赖关系</li>
+  </ul>
+</section>
+
+<!-- 11. Skills -->
+<section id="skills">
+  <h2>11. 技能目录</h2>
+  <p>展示 Agent 已注册的所有工具和技能，方便了解 Agent 的能力边界。</p>
+  <table>
+    <tr><th>工具名</th><th>说明</th><th>类别</th></tr>
+    <tr><td>ssh_execute</td><td>远程执行 Shell/PowerShell 命令</td><td>SSH</td></tr>
+    <tr><td>system_info</td><td>采集系统指标 (CPU/内存/磁盘)</td><td>系统</td></tr>
+    <tr><td>service_control</td><td>服务启停管理</td><td>系统</td></tr>
+    <tr><td>db_query</td><td>数据库查询执行</td><td>数据库</td></tr>
+    <tr><td>db_metrics</td><td>数据库指标采集</td><td>数据库</td></tr>
+    <tr><td>log_query</td><td>日志检索</td><td>日志</td></tr>
+    <tr><td>loki_query</td><td>Loki 日志平台查询</td><td>日志</td></tr>
+    <tr><td>k8s_pod_status</td><td>K8s Pod 状态查询</td><td>K8s</td></tr>
+    <tr><td>k8s_events</td><td>K8s 事件查询</td><td>K8s</td></tr>
+    <tr><td>k8s_logs</td><td>K8s Pod 日志获取</td><td>K8s</td></tr>
+    <tr><td>snmp_walk</td><td>SNMP 设备信息采集</td><td>网络</td></tr>
+    <tr><td>batch_ping</td><td>批量 Ping 连通性检测</td><td>网络</td></tr>
+    <tr><td>port_scan</td><td>端口扫描</td><td>网络</td></tr>
+    <tr><td>topology_build</td><td>服务依赖拓扑构建</td><td>拓扑</td></tr>
+    <tr><td>blast_radius</td><td>爆炸半径计算</td><td>拓扑</td></tr>
+    <tr><td>web_terminal</td><td>Web SSH 终端</td><td>终端</td></tr>
+    <tr><td>notify_send</td><td>多通道消息通知</td><td>通知</td></tr>
+  </table>
+</section>
+
+<!-- 12. Audit -->
+<section id="audit">
+  <h2>12. 审计日志</h2>
+  <p>记录所有用户操作和 API 调用，满足安全合规要求。</p>
+
+  <h3>12.1 日志内容</h3>
+  <table>
+    <tr><th>字段</th><th>说明</th></tr>
+    <tr><td>时间戳</td><td>请求时间</td></tr>
+    <tr><td>用户</td><td>操作用户名</td></tr>
+    <tr><td>方法</td><td>HTTP 方法 (GET/POST/PUT/DELETE)</td></tr>
+    <tr><td>路径</td><td>API 路径</td></tr>
+    <tr><td>状态码</td><td>HTTP 响应码</td></tr>
+    <tr><td>请求参数</td><td>请求参数（敏感数据已脱敏）</td></tr>
+    <tr><td>响应时间</td><td>请求处理耗时（ms）</td></tr>
+    <tr><td>IP 地址</td><td>客户端 IP</td></tr>
+  </table>
+  <div class="note">数据库密码、SSH 密钥、API Token 等敏感数据会自动脱敏处理，以 <code>******</code> 显示。</div>
+
+  <h3>12.2 日志查询</h3>
+  <ul>
+    <li>按时间范围筛选</li>
+    <li>按用户名筛选</li>
+    <li>按 HTTP 方法筛选</li>
+    <li>按状态码筛选（如查询所有 500 错误）</li>
+    <li>按路径关键词搜索</li>
+    <li>导出审计报告（CSV）</li>
+  </ul>
+</section>
+
+<!-- 13. CLI -->
+<section id="cli">
+  <h2>13. CLI 命令行操作</h2>
+  <p>除了 Web 界面，Ops-Agent 也支持命令行交互模式。</p>
+
+  <h3>13.1 运行模式</h3>
+  <pre><code># CLI 交互模式（默认）
+python -m src.main
+
+# Web 管理平台模式
+python -m src.main --mode web
+
+# 守护进程模式（定时巡检）
+python -m src.main --mode daemon
+
+# 单次执行任务
+python -m src.main --task "巡检所有服务器"
+
+# 指定配置目录
+python -m src.main --config /etc/ops-agent</code></pre>
+
+  <h3>13.2 CLI 交互命令</h3>
+  <p>在 CLI 交互模式下，支持以下内置命令：</p>
+  <table>
+    <tr><th>命令</th><th>说明</th></tr>
+    <tr><td><code>help</code></td><td>显示帮助信息</td></tr>
+    <tr><td><code>tools</code></td><td>查看已注册的工具列表</td></tr>
+    <tr><td><code>servers</code></td><td>查看已配置的服务器列表</td></tr>
+    <tr><td><code>jobs</code></td><td>查看定时任务</td></tr>
+    <tr><td><code>quit</code> / <code>exit</code></td><td>退出程序</td></tr>
+  </table>
+
+  <h3>13.3 任务示例</h3>
+  <pre><code>🤖 > 巡检服务器 192.168.1.10
+🤖 > 诊断数据库连接异常
+🤖 > 分析 192.168.1.10 的 nginx 错误日志
+🤖 > 对所有服务器进行巡检
+🤖 > 检查 Redis 内存使用情况
+🤖 > 重启 192.168.1.10 的 nginx 服务</code></pre>
+</section>
+
+<!-- 14. Heal Rules -->
+<section id="heal-rules">
+  <h2>14. 自愈规则配置</h2>
+  <p>自愈规则定义在 <code>config/rules.yaml</code>，支持条件触发和审批控制。</p>
+
+  <h3>14.1 规则结构</h3>
+  <pre><code>heal_rules:
+  - name: "restart_nginx"               # 规则名称
+    condition: "nginx_status == 'stopped'"  # 触发条件
+    actions:
+      - tool: "service_control"         # 调用的工具
+        params:
+          service_name: "nginx"
+          action: "restart"
+        confirm_required: false          # 是否需要人工确认
+    description: "Nginx 停止时自动重启"</code></pre>
+
+  <h3>14.2 内置规则列表</h3>
+  <table>
+    <tr><th>规则名</th><th>触发条件</th><th>操作</th><th>需确认</th></tr>
+    <tr><td>restart_nginx</td><td>Nginx 停止/错误率>10%</td><td>重启 Nginx</td><td>否</td></tr>
+    <tr><td>restart_application</td><td>应用进程不存在</td><td>重启应用</td><td>否</td></tr>
+    <tr><td>clean_journal_logs</td><td>磁盘使用率>85%</td><td>清理 3 天前系统日志</td><td>否</td></tr>
+    <tr><td>clean_apt_cache</td><td>磁盘使用率>90%</td><td>清理包管理器缓存</td><td>是</td></tr>
+    <tr><td>clean_old_logs</td><td>磁盘使用率>90%</td><td>清理 7 天前压缩日志</td><td>是</td></tr>
+    <tr><td>kill_long_queries</td><td>MySQL 长查询>10 且>10分钟</td><td>终止慢查询</td><td>是</td></tr>
+    <tr><td>flush_redis</td><td>Redis 内存>95%</td><td>调整淘汰策略</td><td>是</td></tr>
+    <tr><td>restart_windows_service</td><td>Windows 自动服务停止</td><td>重启服务</td><td>否</td></tr>
+    <tr><td>clean_windows_temp</td><td>Windows 磁盘>90%</td><td>清理临时文件</td><td>否</td></tr>
+    <tr><td>restart_iis</td><td>IIS 应用池停止/错误率>10%</td><td>重启 IIS</td><td>否</td></tr>
+  </table>
+
+  <h3>14.3 自定义规则</h3>
+  <p>在 <code>config/rules.yaml</code> 中添加自定义规则：</p>
+  <pre><code>heal_rules:
+  # 自定义规则：磁盘满时清理 Docker 日志
+  - name: "clean_docker_logs"
+    condition: "disk_usage_percent > 92"
+    actions:
+      - tool: "ssh_execute"
+        params:
+          command: "sudo truncate -s 0 /var/lib/docker/containers/*/*-json.log"
+        confirm_required: true
+    description: "磁盘使用率超过92%时清理 Docker 容器日志（需确认）"</code></pre>
+
+  <h3>14.4 审批与自愈的关系</h3>
+  <div class="note note-warning">
+    当 <code>confirm_required: true</code> 时，自愈操作不会立即执行，而是创建审批请求。
+    审批通过后，Agent 自动继续执行。若 24 小时内未审批，请求自动过期。
+  </div>
+</section>
+
+<div class="footer">
+  <p>Ops-Agent-Grid 操作手册 v2.0.0 | 仓库: <a href="https://github.com/lilonghui-1/ops-agent-grid">github.com/lilonghui-1/ops-agent-grid</a></p>
+</div>
+
+</div>
+</body>
+</html>

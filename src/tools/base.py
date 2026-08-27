@@ -39,6 +39,7 @@ class BaseTool(ABC):
     name: str = ""
     description: str = ""
     parameters: List[ToolParameter] = []
+    requires_approval: bool = False  # 标记该工具执行前是否需要人工审批
 
     def execute_with_logging(self, **kwargs) -> ToolResult:
         """带日志记录和耗时统计的执行包装"""

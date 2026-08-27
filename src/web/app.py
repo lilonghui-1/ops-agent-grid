@@ -36,9 +36,14 @@ def create_app(config) -> FastAPI:
     from .api.configs import router as configs_router
     from .api.chat import router as chat_router
     from .api.audit import router as audit_router
+    from .api.alerts import router as alerts_router
+    from .api.approvals import router as approvals_router
+    from .api.topology import router as topology_router
+    from .api.skills import router as skills_router
     from .websocket.log_stream import router as ws_log_router
     from .websocket.server_monitor import router as ws_monitor_router
-    
+    from .websocket.web_terminal import router as ws_terminal_router
+
     app.include_router(auth_router, prefix="/api/auth", tags=["认证"])
     app.include_router(servers_router, prefix="/api/servers", tags=["服务器"])
     app.include_router(logs_router, prefix="/api/logs", tags=["日志"])
@@ -46,8 +51,13 @@ def create_app(config) -> FastAPI:
     app.include_router(configs_router, prefix="/api/configs", tags=["配置文件"])
     app.include_router(chat_router, prefix="/api/chat", tags=["AI对话"])
     app.include_router(audit_router, prefix="/api/audit", tags=["审计日志"])
+    app.include_router(alerts_router, prefix="/api/alerts", tags=["告警管理"])
+    app.include_router(approvals_router, prefix="/api/approvals", tags=["审批管理"])
+    app.include_router(topology_router, prefix="/api/topology", tags=["拓扑图"])
+    app.include_router(skills_router, prefix="/api/skills", tags=["技能目录"])
     app.include_router(ws_log_router, prefix="/ws", tags=["WebSocket"])
     app.include_router(ws_monitor_router, prefix="/ws", tags=["WebSocket"])
+    app.include_router(ws_terminal_router, prefix="/ws", tags=["WebSocket"])
     
     # 健康检查
     @app.get("/api/health")

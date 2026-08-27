@@ -23,6 +23,12 @@ const menus: MenuItem[] = [
   { index: '/configs', title: '配置管理', icon: 'Tools' },
   { index: '/chat', title: 'AI 对话', icon: 'ChatLineRound' },
   { index: '/audit', title: '审计日志', icon: 'Tickets' },
+  { index: '/alerts', title: '告警管理', icon: 'Bell' },
+  { index: '/incidents', title: '事件中心', icon: 'Warning' },
+  { index: '/approvals', title: '审批管理', icon: 'Check' },
+  { index: '/topology', title: '拓扑图', icon: 'Share' },
+  { index: '/terminal', title: 'Web 终端', icon: 'Monitor' },
+  { index: '/skills', title: '技能目录', icon: 'Grid' },
 ]
 
 // /servers/:host 等子路由高亮父级 /servers

@@ -105,3 +105,71 @@ thresholds:
   cpu: 80
   memory: 85
   disk: 90
+
+# IM 通道配置
+channels:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    enabled: false
+  dingtalk:
+    webhook_url: "${DINGTALK_WEBHOOK}"
+    secret: "${DINGTALK_SECRET}"
+    enabled: true
+  wecom:
+    webhook_url: "${WECOM_WEBHOOK}"
+    enabled: true
+  telegram:
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+    enabled: false
+  lark:
+    webhook_url: "${LARK_WEBHOOK_URL}"
+    enabled: false
+
+# Kubernetes 配置（可选）
+kubernetes:
+  kubeconfig: "${KUBECONFIG}"  # kubeconfig 文件路径，留空使用默认 ~/.kube/config
+  in_cluster: false  # 是否在集群内运行
+
+# 告警配置
+alerts:
+  auto_investigate: true  # 告警触发时自动启动事件调查
+  webhook_token: "${ALERT_WEBHOOK_TOKEN}"  # 外部告警 Webhook 认证 token
+  evaluation_interval: 60  # 告警规则评估间隔（秒）
+
+# 审批配置
+approval:
+  auto_expire_hours: 24  # 审批请求自动过期时间
+  require_for_risky: true  # 高风险操作需要审批
+
+# 知识库 RAG 配置（可选）
+knowledge_rag:
+  enabled: false
+  vector_db_path: "./data/chroma"
+  embedding_model: "text-embedding-ada-002"
+  chunk_size: 500
+  chunk_overlap: 50
+
+# 多模型路由（按 Agent 类型选择不同模型）
+agent_models:
+  coordinator:
+    model: "gpt-4"
+    temperature: 0.1
+  specialist_sre:
+    model: "gpt-4"
+    temperature: 0.1
+  specialist_network:
+    model: "gpt-4"
+    temperature: 0.1
+  specialist_db:
+    model: "gpt-4"
+    temperature: 0.1
+  specialist_compute:
+    model: "gpt-4"
+    temperature: 0.1
+  incident_investigator:
+    model: "gpt-4"
+    temperature: 0.2
+  reviewer:
+    model: "gpt-4"
+    temperature: 0.1

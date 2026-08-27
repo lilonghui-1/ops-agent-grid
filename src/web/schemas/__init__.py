@@ -1,5 +1,11 @@
 """Pydantic Schema 集合 - 导出所有请求/响应模型"""
 
+from .approval import (
+    ApprovalCreate,
+    ApprovalList,
+    ApprovalResponse,
+    ApprovalReview,
+)
 from .auth import (
     LoginRequest,
     RefreshTokenRequest,
@@ -44,6 +50,11 @@ from .service import (
 )
 
 __all__ = [
+    # approval
+    "ApprovalCreate",
+    "ApprovalList",
+    "ApprovalResponse",
+    "ApprovalReview",
     # auth
     "LoginRequest",
     "RefreshTokenRequest",

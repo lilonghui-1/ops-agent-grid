@@ -46,3 +46,22 @@ tenacity>=8.2.0
 pytest>=8.0.0
 pytest-asyncio>=0.23.0
 pytest-mock>=3.12.0
+
+# Kubernetes（可选）
+kubernetes>=29.0.0
+
+# SNMP（可选）
+pysnmp>=6.0.0
+
+# IM 通道
+slack-sdk>=3.27.0
+
+# 多模型 LLM
+langchain-anthropic>=0.2.0
+langchain-google-genai>=2.0.0
+
+# 知识库 RAG（可选）
+chromadb>=0.5.0
+
+# Web 终端
+paramiko>=3.4.0  # 已有，确认存在

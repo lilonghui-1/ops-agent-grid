@@ -91,11 +91,16 @@ def init_database() -> None:
     # 延迟导入以避免循环导入
     from .models import (  # noqa: F401
         Alert,
+        AlertRule,
+        Approval,
         AuditLog,
         ChatHistory,
         ConfigBackup,
         CustomConfig,
+        Incident,
         ServerMetric,
+        TopologyEdge,
+        TopologyNode,
         User,
     )
 

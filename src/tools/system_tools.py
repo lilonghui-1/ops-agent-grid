@@ -170,6 +170,7 @@ class ServiceControlTool(BaseTool):
 
     name = "service_control"
     description = "管理远程服务器上的系统服务（启动、停止、重启、查看状态）。自动适配 Linux/Windows。"
+    requires_approval = True  # 服务控制操作风险较高，执行前需要人工审批
     parameters = [
         ToolParameter(name="host", type="string", description="服务器地址"),
         ToolParameter(name="service_name", type="string", description="服务名称（如 nginx, mysql, redis, nginxsvc）"),

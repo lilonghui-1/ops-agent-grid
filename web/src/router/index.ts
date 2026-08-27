@@ -75,6 +75,42 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/AuditView.vue'),
         meta: { title: '审计日志' },
       },
+      {
+        path: 'alerts',
+        name: 'Alerts',
+        component: () => import('@/views/AlertsView.vue'),
+        meta: { title: '告警管理' },
+      },
+      {
+        path: 'incidents',
+        name: 'Incidents',
+        component: () => import('@/views/IncidentsView.vue'),
+        meta: { title: '事件中心' },
+      },
+      {
+        path: 'approvals',
+        name: 'Approvals',
+        component: () => import('@/views/ApprovalsView.vue'),
+        meta: { title: '审批管理' },
+      },
+      {
+        path: 'topology',
+        name: 'Topology',
+        component: () => import('@/views/TopologyView.vue'),
+        meta: { title: '拓扑图' },
+      },
+      {
+        path: 'terminal',
+        name: 'Terminal',
+        component: () => import('@/views/TerminalView.vue'),
+        meta: { title: 'Web 终端' },
+      },
+      {
+        path: 'skills',
+        name: 'Skills',
+        component: () => import('@/views/SkillsView.vue'),
+        meta: { title: '技能目录' },
+      },
     ],
   },
   {

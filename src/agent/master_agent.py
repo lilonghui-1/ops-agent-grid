@@ -1,4 +1,11 @@
-"""Master Agent - 多 Agent 协作调度中枢"""
+"""Master Agent - 多 Agent 协作调度中枢
+
+兼容性说明：
+    本模块是 Agent 架构升级前的旧版调度器，保留用于向后兼容。
+    新代码应使用 coordinator.py 中的 Coordinator 类，它基于本类的编排思路
+    扩展了专家路由、告警触发调查与高风险操作审批能力。
+    MasterAgent 将继续可用，但建议逐步迁移到 Coordinator。
+"""
 
 import logging
 from typing import Dict, Any
@@ -21,6 +28,8 @@ class MasterAgent:
     2. 路由到对应的专业 Agent 执行
     3. 根据执行结果决定是否需要进一步操作（如巡检异常→诊断→自愈）
     4. 汇总所有结果生成最终报告
+
+    注意：本类为兼容性封装，新架构请使用 Coordinator。
     """
 
     def __init__(self, config):
@@ -229,3 +238,7 @@ class MasterAgent:
             logger.info("告警通知已发送")
         except Exception as e:
             logger.error(f"发送告警通知失败: {e}")
+
+    # 兼容性提示：本类已由 Coordinator 替代，详见 coordinator.py
+    # 新架构应使用 Coordinator 进行任务编排与专家路由
+    _replaced_by = "Coordinator"
